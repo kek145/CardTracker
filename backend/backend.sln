@@ -1,0 +1,46 @@
+﻿
+Microsoft Visual Studio Solution File, Format Version 12.00
+Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Core", "Core", "{25FFB736-AA60-4D62-B118-C9F8DC6CF0E8}"
+EndProject
+Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Infrastructure", "Infrastructure", "{1C3F807E-0BEE-4BE7-860C-A47ACBFAA5E4}"
+EndProject
+Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Presentation", "Presentation", "{3BE37D4D-A430-4731-8DFD-731E2829A982}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "CardTracker.Api", "CardTracker.Api\CardTracker.Api.csproj", "{F1E5DBC7-652A-4B50-B567-7C6927FBB16E}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "CardTracker.Application", "CardTracker.Application\CardTracker.Application.csproj", "{4F390A93-0D11-43A9-9DD2-0D3105E12275}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "CardTracker.Domain", "CardTracker.Domain\CardTracker.Domain.csproj", "{56217958-9529-4A73-A8F5-5EE8124C60E6}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "CardTracker.Infrastructure", "CardTracker.Infrastructure\CardTracker.Infrastructure.csproj", "{A661C99F-4237-43C0-9C7E-3A2E46139F2A}"
+EndProject
+Global
+	GlobalSection(SolutionConfigurationPlatforms) = preSolution
+		Debug|Any CPU = Debug|Any CPU
+		Release|Any CPU = Release|Any CPU
+	EndGlobalSection
+	GlobalSection(NestedProjects) = preSolution
+		{F1E5DBC7-652A-4B50-B567-7C6927FBB16E} = {3BE37D4D-A430-4731-8DFD-731E2829A982}
+		{4F390A93-0D11-43A9-9DD2-0D3105E12275} = {25FFB736-AA60-4D62-B118-C9F8DC6CF0E8}
+		{56217958-9529-4A73-A8F5-5EE8124C60E6} = {25FFB736-AA60-4D62-B118-C9F8DC6CF0E8}
+		{A661C99F-4237-43C0-9C7E-3A2E46139F2A} = {1C3F807E-0BEE-4BE7-860C-A47ACBFAA5E4}
+	EndGlobalSection
+	GlobalSection(ProjectConfigurationPlatforms) = postSolution
+		{F1E5DBC7-652A-4B50-B567-7C6927FBB16E}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{F1E5DBC7-652A-4B50-B567-7C6927FBB16E}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{F1E5DBC7-652A-4B50-B567-7C6927FBB16E}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{F1E5DBC7-652A-4B50-B567-7C6927FBB16E}.Release|Any CPU.Build.0 = Release|Any CPU
+		{4F390A93-0D11-43A9-9DD2-0D3105E12275}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{4F390A93-0D11-43A9-9DD2-0D3105E12275}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{4F390A93-0D11-43A9-9DD2-0D3105E12275}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{4F390A93-0D11-43A9-9DD2-0D3105E12275}.Release|Any CPU.Build.0 = Release|Any CPU
+		{56217958-9529-4A73-A8F5-5EE8124C60E6}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{56217958-9529-4A73-A8F5-5EE8124C60E6}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{56217958-9529-4A73-A8F5-5EE8124C60E6}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{56217958-9529-4A73-A8F5-5EE8124C60E6}.Release|Any CPU.Build.0 = Release|Any CPU
+		{A661C99F-4237-43C0-9C7E-3A2E46139F2A}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{A661C99F-4237-43C0-9C7E-3A2E46139F2A}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{A661C99F-4237-43C0-9C7E-3A2E46139F2A}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{A661C99F-4237-43C0-9C7E-3A2E46139F2A}.Release|Any CPU.Build.0 = Release|Any CPU
+	EndGlobalSection
+EndGlobal
