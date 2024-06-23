@@ -1,4 +1,5 @@
 using CardTracker.Application;
+using CardTracker.Domain;
 using CardTracker.Infrastructure;
 using Microsoft.AspNetCore.Builder;
 using Microsoft.Extensions.Hosting;
@@ -11,7 +12,7 @@ builder.Services.AddControllers();
 builder.Services.AddEndpointsApiExplorer();
 builder.Services.AddSwaggerGen();
 
-builder.Services.AddInfrastructure().AddApplication();
+builder.Services.AddDomain().AddApplication().AddInfrastructure();
 
 var app = builder.Build();
 

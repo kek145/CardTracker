@@ -14,6 +14,8 @@ Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "CardTracker.Domain", "CardT
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "CardTracker.Infrastructure", "CardTracker.Infrastructure\CardTracker.Infrastructure.csproj", "{A661C99F-4237-43C0-9C7E-3A2E46139F2A}"
 EndProject
+Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Tests", "Tests", "{D4324C5D-088E-405D-B87F-1CDDFFC5FF05}"
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
