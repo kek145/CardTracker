@@ -15,7 +15,7 @@ public class RequestToDomain : Profile
             .ForMember(dest => dest.LastName,
                 opt => opt.MapFrom(src => src.LastName))
             .ForMember(dest => dest.Email,
-                opt => opt.MapFrom(src => src.LastName))
+                opt => opt.MapFrom(src => src.Email))
             .ForMember(dest => dest.PasswordHash,
                 opt => opt.MapFrom(src => Encoding.UTF8.GetBytes(src.Password)))
             .ForMember(dest => dest.PasswordSalt,

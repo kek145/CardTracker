@@ -10,8 +10,8 @@ public class User : IEntityId<int>
     public string LastName { get; init; } = string.Empty;
     public string Email { get; init; } = string.Empty;
     public bool EmailConfirmed { get; init; }
-    public byte[] PasswordHash { get; init; } = [];
-    public byte[] PasswordSalt { get; init; } = [];
+    public byte[] PasswordHash { get; set; } = [];
+    public byte[] PasswordSalt { get; set; } = [];
     public string? ResetToken { get; init; }
     
     public DateTime? ResetTokenExpiry { get; init; }

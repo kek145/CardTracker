@@ -28,7 +28,7 @@ public class IdentityController(IRegistrationService registrationService) : Cont
         var response = await _registrationService.RegistrationUserAsync(request);
 
         if (response.StatusCode == HttpStatusCode.BadRequest)
-            return BadRequest(response.Message);
+            return BadRequest(new { Error = response.Message });
         
         return Ok(new { UserId = response.Data });
     }

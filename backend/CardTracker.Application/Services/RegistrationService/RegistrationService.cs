@@ -27,9 +27,8 @@ public class RegistrationService(IMediator mediator, IValidator<RegistrationRequ
 
         var result = await _mediator.Send(command);
         
-        if(result.Data < 0)
-            new BaseResponse<int>().Error($"Failed to register user", HttpStatusCode.BadRequest);
-
-        return new BaseResponse<int>().Success("Success", HttpStatusCode.Created, result.Data);
+        return result.Data <= 0 ? 
+            new BaseResponse<int>().Error($"{result.ErrorMessage}", HttpStatusCode.BadRequest) :
+            new BaseResponse<int>().Success("Success", HttpStatusCode.Created, result.Data);
     }
 }

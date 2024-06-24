@@ -5,6 +5,7 @@ using System.Threading.Tasks;
 using CardTracker.Domain.Models;
 using CardTracker.Application.Common;
 using CardTracker.Infrastructure.Abstractions;
+using CardTracker.Infrastructure.Hasher;
 
 namespace CardTracker.Application.Commands.UserCommands.CreateUser;
 
@@ -21,6 +22,11 @@ public class CreateUserCommandHandler(IMapper mapper, IUserRepository userReposi
 
         if (user)
             return Result<int>.ErrorResult("User with the specified email already exists.");
+        
+        PasswordHasher.CreatePasswordHash(request.Request.Password, out var passwordHash, out var passwordSalt);
+
+        registration.PasswordHash = passwordHash;
+        registration.PasswordSalt = passwordSalt;
 
         var newUser = await _userRepository.AddUserAsync(registration, cancellationToken);
 
