@@ -15,9 +15,14 @@
     </ItemGroup>
 
     <ItemGroup>
-      <Folder Include="Commands\" />
+      <Folder Include="Commands\UserCommands\DeleteUser\" />
+      <Folder Include="Commands\UserCommands\UpdateUser\" />
       <Folder Include="Queries\" />
-      <Folder Include="Validators\" />
+    </ItemGroup>
+
+    <ItemGroup>
+      <ProjectReference Include="..\CardTracker.Domain\CardTracker.Domain.csproj" />
+      <ProjectReference Include="..\CardTracker.Infrastructure\CardTracker.Infrastructure.csproj" />
     </ItemGroup>
 
 </Project>
