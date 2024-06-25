@@ -2,12 +2,13 @@
 using System.Linq;
 using System.Collections.Generic;
 using System.Security.Cryptography;
+using CardTracker.Infrastructure.Abstractions.Identity;
 
 namespace CardTracker.Infrastructure.Hasher;
 
-public static class PasswordHasher
+public class PasswordHasher : IPasswordHasher
 {
-    public static void CreatePasswordHash(string password, out byte[] passwordHash, out byte[] passwordSalt)
+    public void CreatePasswordHash(string password, out byte[] passwordHash, out byte[] passwordSalt)
     {
         using var hmac = new HMACSHA512();
         
@@ -16,7 +17,7 @@ public static class PasswordHasher
         passwordHash = hmac.ComputeHash(Encoding.UTF8.GetBytes(password));
     }
 
-    public static bool VerifyPasswordHash(string password, IEnumerable<byte> passwordHash, byte[] passwordSalt)
+    public bool VerifyPasswordHash(string password, IEnumerable<byte> passwordHash, byte[] passwordSalt)
     {
         using var hmac = new HMACSHA512(passwordSalt);
         

@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Collections.Generic;
 using CardTracker.Domain.Abstractions;
 
 namespace CardTracker.Domain.Models;
@@ -15,4 +16,5 @@ public class User : IEntityId<int>
     public string? ResetToken { get; init; }
     
     public DateTime? ResetTokenExpiry { get; init; }
+    public virtual ICollection<RefreshToken> RefreshToken { get; set; } = [];
 }

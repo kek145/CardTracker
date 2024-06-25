@@ -1,6 +1,8 @@
-﻿using CardTracker.Application.Services.RegistrationService;
-using FluentValidation;
+﻿using FluentValidation;
 using Microsoft.Extensions.DependencyInjection;
+using CardTracker.Application.Services.AuthService;
+using CardTracker.Application.Services.TokenService;
+using CardTracker.Application.Services.RegistrationService;
 
 namespace CardTracker.Application;
 
@@ -14,6 +16,8 @@ public static class DependencyInjection
 
         serviceCollection.AddMediatR(configuration => configuration.RegisterServicesFromAssemblies(assembly));
 
+        serviceCollection.AddTransient<IAuthService, AuthService>();
+        serviceCollection.AddTransient<ITokenService, TokenService>();
         serviceCollection.AddTransient<IRegistrationService, RegistrationService>();
         
         return serviceCollection;

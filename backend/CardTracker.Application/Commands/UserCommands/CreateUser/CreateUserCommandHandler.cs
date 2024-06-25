@@ -4,14 +4,15 @@ using System.Threading;
 using System.Threading.Tasks;
 using CardTracker.Domain.Models;
 using CardTracker.Application.Common;
-using CardTracker.Infrastructure.Abstractions;
-using CardTracker.Infrastructure.Hasher;
+using CardTracker.Infrastructure.Abstractions.Identity;
+using CardTracker.Infrastructure.Abstractions.Repositories;
 
 namespace CardTracker.Application.Commands.UserCommands.CreateUser;
 
-public class CreateUserCommandHandler(IMapper mapper, IUserRepository userRepository) : IRequestHandler<CreateUserCommand, Result<int>>
+public class CreateUserCommandHandler(IMapper mapper, IPasswordHasher passwordHasher, IUserRepository userRepository) : IRequestHandler<CreateUserCommand, Result<int>>
 {
     private readonly IMapper _mapper = mapper;
+    private readonly IPasswordHasher _passwordHasher = passwordHasher;
     private readonly IUserRepository _userRepository = userRepository;
 
     public async Task<Result<int>> Handle(CreateUserCommand request, CancellationToken cancellationToken)
@@ -20,10 +21,10 @@ public class CreateUserCommandHandler(IMapper mapper, IUserRepository userReposi
 
         var registration = _mapper.Map<User>(request.Request);
 
-        if (user)
+        if (user is null)
             return Result<int>.ErrorResult("User with the specified email already exists.");
         
-        PasswordHasher.CreatePasswordHash(request.Request.Password, out var passwordHash, out var passwordSalt);
+        _passwordHasher.CreatePasswordHash(request.Request.Password, out var passwordHash, out var passwordSalt);
 
         registration.PasswordHash = passwordHash;
         registration.PasswordSalt = passwordSalt;

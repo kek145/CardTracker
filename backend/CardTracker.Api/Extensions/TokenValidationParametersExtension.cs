@@ -9,9 +9,9 @@ public static class TokenValidationParametersExtension
 {
     public static TokenValidationParameters AddTokenParameters(IConfiguration configuration)
     {
+        var key = configuration.GetSection("JWTConfiguration:SecretKey").Value!;
         var issuer = configuration.GetSection("JWTConfiguration:Issuer").Value!; 
         var audience = configuration.GetSection("JWTConfiguration:Audience").Value!;
-        var key = configuration.GetSection("JWTConfiguration:JWT_ACCESS_SECRET").Value!;
         
         return new TokenValidationParameters
         {

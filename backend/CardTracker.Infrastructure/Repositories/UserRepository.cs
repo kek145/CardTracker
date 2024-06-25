@@ -1,9 +1,9 @@
 ﻿using System.Threading;
 using System.Threading.Tasks;
 using CardTracker.Domain.Models;
-using CardTracker.Infrastructure.Abstractions;
-using CardTracker.Infrastructure.DataStore;
 using Microsoft.EntityFrameworkCore;
+using CardTracker.Infrastructure.DataStore;
+using CardTracker.Infrastructure.Abstractions.Repositories;
 
 namespace CardTracker.Infrastructure.Repositories;
 
@@ -19,12 +19,12 @@ public class UserRepository(ApplicationDbContext context) : IUserRepository
         return newUser.Entity.Id;
     }
 
-    public async Task<bool> GetUserByEmailAsync(string email, CancellationToken cancellationToken = default)
+    public async Task<User?> GetUserByEmailAsync(string email, CancellationToken cancellationToken = default)
     {
         var result = await _context.Users
             .AsNoTracking()
             .FirstOrDefaultAsync(x => x.Email == email, cancellationToken);
-
-        return result is not null;
+        
+        return result;
     }
 }
