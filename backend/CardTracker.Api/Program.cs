@@ -2,6 +2,7 @@ using CardTracker.Domain;
 using CardTracker.Application;
 using CardTracker.Infrastructure;
 using CardTracker.Api.Extensions;
+using CardTracker.Application.Common.Options;
 using Microsoft.AspNetCore.Builder;
 using Microsoft.Extensions.Hosting;
 using Microsoft.Extensions.DependencyInjection;
@@ -16,6 +17,8 @@ builder.Services.AddSwaggerGen();
 builder.Services.AddAuthenticationAndAuthorization(builder.Configuration);
 
 builder.Services.AddDomain().AddApplication().AddInfrastructure(builder.Configuration);
+
+builder.Services.Configure<JwtOptions>(builder.Configuration.GetSection(nameof(JwtOptions)));
 
 builder.Services.AddCors(options =>
 {

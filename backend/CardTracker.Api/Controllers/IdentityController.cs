@@ -23,7 +23,15 @@ public class IdentityController(IAuthService authService, IRegistrationService r
     public async Task<ActionResult<AuthResponse>> Login([FromBody] LoginRequest request)
     {
         var response = await _authService.LoginUserAsync(request);
-        return Ok(response);
+
+        if (response.StatusCode == HttpStatusCode.Unauthorized)
+            return Unauthorized(new { message = response.Message });
+        
+        return Ok(new
+        {
+            access_token = response.Data.AccessToken, 
+            refresh_token = response.Data.RefreshToken
+        });
     }
 
     [HttpPost]

@@ -21,7 +21,7 @@ public class CreateUserCommandHandler(IMapper mapper, IPasswordHasher passwordHa
 
         var registration = _mapper.Map<User>(request.Request);
 
-        if (user is null)
+        if (user is not null)
             return Result<int>.ErrorResult("User with the specified email already exists.");
         
         _passwordHasher.CreatePasswordHash(request.Request.Password, out var passwordHash, out var passwordSalt);

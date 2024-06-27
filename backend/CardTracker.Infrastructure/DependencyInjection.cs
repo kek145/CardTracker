@@ -15,6 +15,7 @@ public static class DependencyInjection
     {
         serviceCollection.AddScoped<IUserRepository, UserRepository>();
         serviceCollection.AddScoped<IPasswordHasher, PasswordHasher>();
+        serviceCollection.AddScoped<IRefreshTokenRepository, RefreshTokenRepository>();
         
         serviceCollection.AddDbContext<ApplicationDbContext>(options =>
         {

@@ -1,20 +1,34 @@
 ﻿using System;
-using System.Globalization;
-using System.IdentityModel.Tokens.Jwt;
 using System.Linq;
 using System.Text;
+using MediatR;
+using System.Globalization;
+using System.Threading.Tasks;
 using System.Security.Claims;
 using Microsoft.Extensions.Options;
 using Microsoft.IdentityModel.Tokens;
+using System.IdentityModel.Tokens.Jwt;
 using CardTracker.Domain.Responses.Auth;
-using CardTracker.Application.Common.Options;
 using CardTracker.Application.Common.Models;
+using CardTracker.Application.Common.Options;
+using CardTracker.Application.Commands
+    .RefreshTokenCommands.CreateRefreshToken;
 
 namespace CardTracker.Application.Services.TokenService;
 
-public class TokenService(IOptions<JwtOptions> options) : ITokenService
+public class TokenService(IMediator mediator, IOptions<JwtOptions> options) : ITokenService
 {
+    private readonly IMediator _mediator = mediator;
     private readonly JwtOptions _options = options.Value;
+
+    public async Task<bool> SaveTokenAsync(int userId, string refreshToken)
+    {
+        var command = new CreateRefreshTokenCommand(userId, refreshToken);
+
+        var result = await _mediator.Send(command);
+
+        return result.IsSuccess;
+    }
 
     public AuthResponse GenerateTokens(UserPayload payload)
     {
@@ -55,7 +69,7 @@ public class TokenService(IOptions<JwtOptions> options) : ITokenService
         return jwtTokenHandler.WriteToken(token);
     }
 
-    private string GenerateRefreshToken(int length)
+    private static string GenerateRefreshToken(int length)
     {
         const string chars = "ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789";
         var random = new Random();
