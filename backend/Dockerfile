@@ -1,37 +1,39 @@
+# Установка SDK для сборки
 FROM mcr.microsoft.com/dotnet/sdk:8.0 AS build-env
 
+# Установка рабочей директории
 WORKDIR /src
 
-COPY CardTracker.Infrastructure/*csproj CardTracker.Infrastructure/
-COPY CardTracker.Domain/*csproj CardTracker.Domain/
-COPY CardTracker.Application/*csproj CardTracker.Application/
-COPY CardTracker.Api/*csproj CardTracker.Api/
+# Копирование файла решения и восстановление зависимостей
+COPY backend.sln ./
+COPY CardTracker.Infrastructure/*.csproj CardTracker.Infrastructure/
+COPY CardTracker.Domain/*.csproj CardTracker.Domain/
+COPY CardTracker.Application/*.csproj CardTracker.Application/
+COPY CardTracker.Api/*.csproj CardTracker.Api/
 
-RUN dotnet restore CardTracker.Infrastructure/
-RUN dotnet restore CardTracker.Application/
-RUN dotnet restore CardTracker.Domain/
-RUN dotnet restore CardTracker.Api/
+RUN dotnet restore
 
-COPY CardTracker.Infrastructure/. CardTracker.Infrastructure/
-COPY CardTracker.Application/. CardTracker.Application/
-COPY CardTracker.Domain/. CardTracker.Domain/
+# Копирование всех файлов проекта
+COPY . ./
 
-FROM build-env AS build-app
-
+# Сборка и публикация проекта
 WORKDIR /src/CardTracker.Api
+RUN dotnet publish -c Release -o /app/publish
 
-COPY CardTracker.Api/. .
-
-RUN dotnet build -c Release -o /app/publish
-
+# Установка среды выполнения
 FROM mcr.microsoft.com/dotnet/aspnet:8.0 AS runtime
 
+# Установка рабочей директории
 WORKDIR /app
 
-COPY --from=build-app /app/publish .
+# Копирование сборки из стадии сборки
+COPY --from=build-env /app/publish .
 
+# Открытие порта
 EXPOSE 80
 
+# Настройка переменной окружения
 ENV ASPNETCORE_ENVIRONMENT=Production
 
+# Определение точки входа
 ENTRYPOINT ["dotnet", "CardTracker.Api.dll"]

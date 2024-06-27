@@ -35,5 +35,6 @@ services:
   #     - ASPNETCORE_URLS=http://+:80
   #   networks:
   #     - web-app
+  
 volumes:
   app-data:
