@@ -1,4 +1,5 @@
-﻿using System.Linq;
+﻿using System;
+using System.Linq;
 using System.Threading;
 using System.Threading.Tasks;
 using CardTracker.Domain.Models;
@@ -11,7 +12,13 @@ namespace CardTracker.Infrastructure.Repositories;
 public class RefreshTokenRepository(ApplicationDbContext context) : IRefreshTokenRepository
 {
     private readonly ApplicationDbContext _context = context;
-    
+
+    public async Task<RefreshToken?> GetRefreshTokenByUserIdAsync(int userId)
+    {
+        var token = await _context.RefreshTokens.AsNoTracking().FirstOrDefaultAsync(x => x.UserId == userId);
+        return token;
+    }
+
     public async Task<int> DeleteRefreshTokenAsync(int tokenId, CancellationToken cancellationToken = default)
     {
         return await _context.RefreshTokens
@@ -29,8 +36,18 @@ public class RefreshTokenRepository(ApplicationDbContext context) : IRefreshToke
 
     public async Task<int> AddRefreshTokenAsync(RefreshToken refreshToken, CancellationToken cancellationToken = default)
     {
-        var result = await _context.RefreshTokens.AddAsync(refreshToken, cancellationToken);
-        await _context.SaveChangesAsync(cancellationToken);
-        return result.Entity.Id;
+        try
+        {
+            var result = await _context.RefreshTokens.AddAsync(refreshToken, cancellationToken);
+        
+            await _context.SaveChangesAsync(cancellationToken);
+        
+            return result.Entity.Id;
+        }
+        catch (Exception e)
+        {
+            Console.WriteLine(e.InnerException?.Message);
+            throw;
+        }
     }
 }

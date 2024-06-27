@@ -1,7 +1,7 @@
 ﻿using System;
+using MediatR;
 using System.Linq;
 using System.Text;
-using MediatR;
 using System.Globalization;
 using System.Threading.Tasks;
 using System.Security.Claims;
@@ -25,6 +25,8 @@ public class TokenService(IMediator mediator, IOptions<JwtOptions> options) : IT
     {
         var command = new CreateRefreshTokenCommand(userId, refreshToken);
 
+        Console.WriteLine(userId);
+        
         var result = await _mediator.Send(command);
 
         return result.IsSuccess;

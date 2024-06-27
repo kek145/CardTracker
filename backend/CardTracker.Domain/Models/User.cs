@@ -16,5 +16,5 @@ public class User : IEntityId<int>
     public string? ResetToken { get; init; }
     
     public DateTime? ResetTokenExpiry { get; init; }
-    public virtual ICollection<RefreshToken> RefreshToken { get; set; } = [];
+    public virtual ICollection<RefreshToken> RefreshToken { get; init; } = [];
 }

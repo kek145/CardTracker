@@ -1,13 +1,14 @@
 ﻿using System;
 using System.Net;
 using System.Threading.Tasks;
-using CardTracker.Application.Services.AuthService;
-using CardTracker.Application.Services.RegistrationService;
+using Microsoft.AspNetCore.Mvc;
+using Microsoft.AspNetCore.Http;
 using CardTracker.Domain.Requests.Auth;
-using CardTracker.Domain.Requests.Registration;
 using CardTracker.Domain.Responses.Auth;
 using Microsoft.AspNetCore.Authorization;
-using Microsoft.AspNetCore.Mvc;
+using CardTracker.Domain.Requests.Registration;
+using CardTracker.Application.Services.AuthService;
+using CardTracker.Application.Services.RegistrationService;
 
 namespace CardTracker.Api.Controllers;
 
@@ -26,6 +27,21 @@ public class IdentityController(IAuthService authService, IRegistrationService r
 
         if (response.StatusCode == HttpStatusCode.Unauthorized)
             return Unauthorized(new { message = response.Message });
+        
+        HttpContext.Response.Cookies.Append("X-Refresh-Token", response.Data.RefreshToken, new CookieOptions
+        {
+            HttpOnly = true,
+            Secure = true,
+            SameSite = SameSiteMode.Strict,
+            Expires = DateTimeOffset.UtcNow.AddDays(30)
+        });
+        
+        HttpContext.Response.Cookies.Append("X-Access-Token", response.Data.AccessToken, new CookieOptions
+        {
+            HttpOnly = true,
+            SameSite = SameSiteMode.Strict,
+            Expires = DateTimeOffset.UtcNow.AddDays(30)
+        });
         
         return Ok(new
         {

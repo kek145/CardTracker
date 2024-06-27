@@ -15,6 +15,13 @@ public class CreateRefreshTokenCommandHandler(IRefreshTokenRepository refreshTok
     
     public async Task<Result<int>> Handle(CreateRefreshTokenCommand request, CancellationToken cancellationToken)
     {
+        var token = await _refreshTokenRepository.GetRefreshTokenByUserIdAsync(request.UserId);
+
+        if (token is not null)
+        {
+            await _refreshTokenRepository.UpdateRefreshTokenAsync(token.Id, request.RefreshToken, cancellationToken);
+            return Result<int>.SuccessResult(token.Id);
+        }
         var refreshToken = new RefreshToken
         {
             Token = request.RefreshToken,
@@ -24,9 +31,6 @@ public class CreateRefreshTokenCommandHandler(IRefreshTokenRepository refreshTok
         };
 
         var result = await _refreshTokenRepository.AddRefreshTokenAsync(refreshToken, cancellationToken);
-
-        return result <= 0 
-            ? Result<int>.ErrorResult("An error occurred while generating the refresh token") 
-            : Result<int>.SuccessResult(result);
+        return Result<int>.SuccessResult(result);
     }
 }

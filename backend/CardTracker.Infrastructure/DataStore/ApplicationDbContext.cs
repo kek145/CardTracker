@@ -6,8 +6,8 @@ namespace CardTracker.Infrastructure.DataStore;
 
 public sealed class ApplicationDbContext : DbContext
 {
-    public DbSet<User> Users { get; set; }
-    public DbSet<RefreshToken> RefreshTokens { get; set; }
+    public DbSet<User> Users { get; init; }
+    public DbSet<RefreshToken> RefreshTokens { get; init; }
     
     public ApplicationDbContext(DbContextOptions<ApplicationDbContext> options) : base(options)
     {
