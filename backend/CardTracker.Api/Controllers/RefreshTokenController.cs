@@ -1,8 +1,10 @@
 ﻿using System;
 using System.Threading.Tasks;
 using Microsoft.AspNetCore.Mvc;
-using CardTracker.Application.Services.TokenService;
 using Microsoft.AspNetCore.Http;
+using Microsoft.AspNetCore.Authorization;
+using CardTracker.Application.Services.TokenService;
+using Microsoft.AspNetCore.Authentication.JwtBearer;
 
 namespace CardTracker.Api.Controllers;
 
@@ -14,9 +16,22 @@ public class RefreshTokenController(ITokenService tokenService) : ControllerBase
 
     [HttpPost]
     [Route("revoke")]
+    [Authorize(AuthenticationSchemes = JwtBearerDefaults.AuthenticationScheme)]
     public async Task<IActionResult> RevokeRefreshToken()
     {
-        return Ok();
+        var refreshToken = HttpContext.Request.Cookies["X-Refresh-Token"];
+
+        if (refreshToken is null)
+            return NotFound(new { error = "Refresh token not found!" });
+        
+        var response = await _tokenService.RevokeTokenAsync(refreshToken);
+
+        if (response is { IsSuccess: false, ErrorMessage: "refresh token has expired" })
+            return Unauthorized(new { error = response.ErrorMessage });
+        
+        Response.Cookies.Delete("X-Refresh-Token");
+        
+        return Ok(new { message = "Token successfully revoked!" });
     }
     
     [HttpPost]
@@ -32,9 +47,6 @@ public class RefreshTokenController(ITokenService tokenService) : ControllerBase
 
         if (!response.IsSuccess)
             return Unauthorized(new { error = response.ErrorMessage });
-
-        if (response.ErrorMessage == "Refresh token has been revoked!")
-            return Forbid();
         
         HttpContext.Response.Cookies.Append("X-Refresh-Token", response.Data.RefreshToken, new CookieOptions
         {

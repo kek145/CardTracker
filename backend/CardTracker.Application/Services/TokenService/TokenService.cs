@@ -1,6 +1,5 @@
 ﻿using System;
 using MediatR;
-using System.Linq;
 using System.Text;
 using System.Globalization;
 using System.Threading.Tasks;
@@ -12,9 +11,10 @@ using System.IdentityModel.Tokens.Jwt;
 using CardTracker.Domain.Responses.Auth;
 using CardTracker.Application.Common.Models;
 using CardTracker.Application.Common.Options;
-using CardTracker.Application.Commands.TokenCommands.CreateToken;
-using CardTracker.Application.Queries.TokenQueries.GetTokenByName;
 using CardTracker.Application.Queries.UserQueries.GetUserById;
+using CardTracker.Application.Commands.TokenCommands.CreateToken;
+using CardTracker.Application.Commands.TokenCommands.RevokeToken;
+using CardTracker.Application.Queries.TokenQueries.GetTokenByName;
 
 namespace CardTracker.Application.Services.TokenService;
 
@@ -68,10 +68,34 @@ public class TokenService(IMediator mediator, IOptions<JwtOptions> options) : IT
         return result.IsSuccess;
     }
 
+    public async Task<Result> RevokeTokenAsync(string refreshToken)
+    {
+        var tokenName = new GetTokenByNameQuery(refreshToken);
+
+        var token = await _mediator.Send(tokenName);
+
+        if (!token.IsSuccess)
+            return Result.Failure(token.ErrorMessage);
+
+        if (token.Data.IsRevoked)
+            return Result.Failure("refresh token has already been revoked");
+
+        if (token.Data.ExpiresAt < DateTime.UtcNow)
+            return Result.Failure("refresh token has expired");
+
+        var command = new RevokeTokenCommand(token.Data.Id);
+
+        var result = await _mediator.Send(command);
+
+        return !result.IsSuccess 
+            ? Result.Failure(result.ErrorMessage) 
+            : Result.Success();
+    }
+
     public AuthResponse GenerateTokens(UserPayload payload)
     {
         var accessToken = GenerateAccessToken(payload);
-        var refreshToken = GenerateRefreshToken(155);
+        var refreshToken = GenerateRefreshToken();
 
         return new AuthResponse
         {
@@ -96,7 +120,7 @@ public class TokenService(IMediator mediator, IOptions<JwtOptions> options) : IT
                 new Claim(JwtRegisteredClaimNames.Jti, Guid.NewGuid().ToString()),
                 new Claim(JwtRegisteredClaimNames.Iat, DateTime.UtcNow.ToUniversalTime().ToString(CultureInfo.CurrentCulture))
             }),
-            Expires = DateTime.UtcNow.AddMinutes(_options.ExpiresHours),
+            Expires = DateTime.UtcNow.AddHours(_options.ExpiresHours),
             Issuer = _options.Issuer,
             Audience = _options.Audience,
             SigningCredentials = new SigningCredentials(new SymmetricSecurityKey(secretKey), SecurityAlgorithms.HmacSha256)
@@ -107,10 +131,8 @@ public class TokenService(IMediator mediator, IOptions<JwtOptions> options) : IT
         return jwtTokenHandler.WriteToken(token);
     }
 
-    private static string GenerateRefreshToken(int length)
+    private static string GenerateRefreshToken()
     {
-        const string chars = "ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789";
-        var random = new Random();
-        return new string(Enumerable.Repeat(chars, length).Select(s => s[random.Next(s.Length)]).ToArray());
+        return Guid.NewGuid().ToString("N");
     }
 }

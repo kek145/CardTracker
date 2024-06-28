@@ -3,9 +3,9 @@ using System.Linq;
 using System.Threading;
 using System.Threading.Tasks;
 using CardTracker.Domain.Models;
-using CardTracker.Infrastructure.Abstractions.Repositories;
-using CardTracker.Infrastructure.DataStore;
 using Microsoft.EntityFrameworkCore;
+using CardTracker.Infrastructure.DataStore;
+using CardTracker.Infrastructure.Abstractions.Repositories;
 
 namespace CardTracker.Infrastructure.Repositories;
 
@@ -30,6 +30,15 @@ public class TokenRepository(ApplicationDbContext context) : ITokenRepository
         return await _context.RefreshTokens
             .Where(x => x.Id == tokenId)
             .ExecuteDeleteAsync(cancellationToken);
+    }
+
+    public async Task<int> RevokeRefreshTokenAsync(int tokenId, CancellationToken cancellationToken = default)
+    {
+        return await _context.RefreshTokens
+            .Where(x => x.Id == tokenId)
+            .ExecuteUpdateAsync(x 
+                => x.SetProperty(r => r.IsRevoked, true)
+                    .SetProperty(t => t.RevokedAt, DateTime.UtcNow), cancellationToken);
     }
 
     public async Task<int> UpdateRefreshTokenAsync(int tokenId, string refreshToken, CancellationToken cancellationToken = default)

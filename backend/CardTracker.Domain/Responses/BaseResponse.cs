@@ -15,7 +15,7 @@ public class BaseResponse<T> : IBaseResponse<T>
         return new BaseResponse<T> { Message = message, StatusCode = statusCode, Data = data };
     }
 
-    public BaseResponse<T> Error(string message, HttpStatusCode statusCode)
+    public BaseResponse<T> Failure(string message, HttpStatusCode statusCode)
     {
         return new BaseResponse<T> { Message = message, StatusCode = statusCode };
     }

@@ -18,17 +18,17 @@ public class RegistrationService(IMediator mediator, IValidator<RegistrationRequ
         var validation = await _validator.ValidateAsync(request);
 
         if (!validation.IsValid)
-            return new BaseResponse<int>().Error($"{validation}", HttpStatusCode.BadRequest);
+            return new BaseResponse<int>().Failure($"{validation}", HttpStatusCode.BadRequest);
 
         if (request.Password != request.ConfirmPassword)
-            return new BaseResponse<int>().Error("Password mismatch", HttpStatusCode.BadRequest);
+            return new BaseResponse<int>().Failure("Password mismatch", HttpStatusCode.BadRequest);
 
         var command = new CreateUserCommand(request);
 
         var result = await _mediator.Send(command);
         
         return result.Data <= 0 ? 
-            new BaseResponse<int>().Error($"{result.ErrorMessage}", HttpStatusCode.BadRequest) :
+            new BaseResponse<int>().Failure($"{result.ErrorMessage}", HttpStatusCode.BadRequest) :
             new BaseResponse<int>().Success("Success", HttpStatusCode.Created, result.Data);
     }
 }

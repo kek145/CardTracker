@@ -26,9 +26,8 @@ public class CreateTokenCommandHandler(ITokenRepository tokenRepository)
             else
             {
                 await _tokenRepository.UpdateRefreshTokenAsync(token.Id, request.RefreshToken, cancellationToken);
+                return Result<int>.Success(token.Id);
             }
-            
-            return Result<int>.Success(token.Id);
         }
         
         var refreshToken = new RefreshToken

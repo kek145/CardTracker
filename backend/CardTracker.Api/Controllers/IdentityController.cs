@@ -9,15 +9,17 @@ using Microsoft.AspNetCore.Authorization;
 using CardTracker.Domain.Requests.Registration;
 using CardTracker.Application.Services.AuthService;
 using CardTracker.Application.Services.RegistrationService;
+using CardTracker.Application.Services.TokenService;
 using Microsoft.AspNetCore.Authentication.JwtBearer;
 
 namespace CardTracker.Api.Controllers;
 
 [ApiController]
 [Route("api/identity")]
-public class IdentityController(IAuthService authService, IRegistrationService registrationService) : ControllerBase
+public class IdentityController(IAuthService authService, ITokenService tokenService, IRegistrationService registrationService) : ControllerBase
 {
     private readonly IAuthService _authService = authService;
+    private readonly ITokenService _tokenService = tokenService;
     private readonly IRegistrationService _registrationService = registrationService;
     
     [HttpPost]
@@ -61,6 +63,27 @@ public class IdentityController(IAuthService authService, IRegistrationService r
             return BadRequest(new { Error = response.Message });
         
         return Ok(new { UserId = response.Data });
+    }
+
+    [HttpPost]
+    [Route("logout")]
+    [Authorize(AuthenticationSchemes = JwtBearerDefaults.AuthenticationScheme)]
+    public async Task<IActionResult> Logout()
+    {
+        var refreshToken = HttpContext.Request.Cookies["X-Refresh-Token"];
+
+        if (refreshToken is null)
+            return NotFound(new { error = "Refresh token not found!" });
+        
+        var response = await _tokenService.RevokeTokenAsync(refreshToken);
+
+        if (!response.IsSuccess)
+            return Unauthorized(new { error = response.ErrorMessage });
+        
+        Response.Cookies.Delete("X-Refresh-Token");
+        Response.Cookies.Delete("X-Access-Token");
+
+        return Ok(new { message = "Logout successful" });
     }
 
     [HttpGet]
