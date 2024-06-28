@@ -9,6 +9,7 @@ using Microsoft.AspNetCore.Authorization;
 using CardTracker.Domain.Requests.Registration;
 using CardTracker.Application.Services.AuthService;
 using CardTracker.Application.Services.RegistrationService;
+using Microsoft.AspNetCore.Authentication.JwtBearer;
 
 namespace CardTracker.Api.Controllers;
 
@@ -63,10 +64,10 @@ public class IdentityController(IAuthService authService, IRegistrationService r
     }
 
     [HttpGet]
-    [Authorize]
     [Route("id")]
-    public IActionResult GetUserId()
+    [Authorize(AuthenticationSchemes = JwtBearerDefaults.AuthenticationScheme)]
+    public ActionResult<int> GetById()
     {
-        return Ok(new { userId = 1 });
+        return Ok(new { id = 1 });
     }
 }

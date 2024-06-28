@@ -9,13 +9,19 @@ using Microsoft.EntityFrameworkCore;
 
 namespace CardTracker.Infrastructure.Repositories;
 
-public class RefreshTokenRepository(ApplicationDbContext context) : IRefreshTokenRepository
+public class TokenRepository(ApplicationDbContext context) : ITokenRepository
 {
     private readonly ApplicationDbContext _context = context;
 
-    public async Task<RefreshToken?> GetRefreshTokenByUserIdAsync(int userId)
+    public async Task<RefreshToken?> GetRefreshTokenByUserIdAsync(int userId, CancellationToken cancellationToken)
     {
-        var token = await _context.RefreshTokens.AsNoTracking().FirstOrDefaultAsync(x => x.UserId == userId);
+        var token = await _context.RefreshTokens.AsNoTracking().FirstOrDefaultAsync(x => x.UserId == userId, cancellationToken);
+        return token;
+    }
+
+    public async Task<RefreshToken?> GetRefreshTokenByNameAsync(string refreshToken, CancellationToken cancellationToken)
+    {
+        var token = await _context.RefreshTokens.FirstOrDefaultAsync(x => x.Token == refreshToken, cancellationToken);
         return token;
     }
 
@@ -36,18 +42,10 @@ public class RefreshTokenRepository(ApplicationDbContext context) : IRefreshToke
 
     public async Task<int> AddRefreshTokenAsync(RefreshToken refreshToken, CancellationToken cancellationToken = default)
     {
-        try
-        {
-            var result = await _context.RefreshTokens.AddAsync(refreshToken, cancellationToken);
+        var result = await _context.RefreshTokens.AddAsync(refreshToken, cancellationToken);
         
-            await _context.SaveChangesAsync(cancellationToken);
+        await _context.SaveChangesAsync(cancellationToken);
         
-            return result.Entity.Id;
-        }
-        catch (Exception e)
-        {
-            Console.WriteLine(e.InnerException?.Message);
-            throw;
-        }
+        return result.Entity.Id;
     }
 }

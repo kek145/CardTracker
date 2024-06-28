@@ -7,12 +7,14 @@ using System.Threading.Tasks;
 using System.Security.Claims;
 using Microsoft.Extensions.Options;
 using Microsoft.IdentityModel.Tokens;
+using CardTracker.Application.Common;
 using System.IdentityModel.Tokens.Jwt;
 using CardTracker.Domain.Responses.Auth;
 using CardTracker.Application.Common.Models;
 using CardTracker.Application.Common.Options;
-using CardTracker.Application.Commands
-    .RefreshTokenCommands.CreateRefreshToken;
+using CardTracker.Application.Commands.TokenCommands.CreateToken;
+using CardTracker.Application.Queries.TokenQueries.GetTokenByName;
+using CardTracker.Application.Queries.UserQueries.GetUserById;
 
 namespace CardTracker.Application.Services.TokenService;
 
@@ -21,11 +23,45 @@ public class TokenService(IMediator mediator, IOptions<JwtOptions> options) : IT
     private readonly IMediator _mediator = mediator;
     private readonly JwtOptions _options = options.Value;
 
+    public async Task<Result<AuthResponse>> ValidationRefreshTokenAsync(string refreshToken)
+     {
+        var query = new GetTokenByNameQuery(refreshToken);
+
+        var token = await _mediator.Send(query);
+
+        if (!token.IsSuccess)
+            return Result<AuthResponse>.Failure($"{token.ErrorMessage}");
+
+        if (token.Data.ExpiresAt < DateTime.UtcNow)
+            return Result<AuthResponse>.Failure("Refresh token has expired!");
+
+        if (token.Data.IsRevoked)
+            return Result<AuthResponse>.Failure("Refresh token has been revoked!");
+
+        var user = new GetUserByIdQuery(token.Data.UserId);
+
+        var result = await _mediator.Send(user);
+        
+        if (!result.IsSuccess)
+            return Result<AuthResponse>.Failure(result.ErrorMessage);
+
+        var payload = new UserPayload
+        {
+            UserId = result.Data.Id,
+            FullName = $"{result.Data.FirstName} {result.Data.LastName}",
+            Email = result.Data.Email
+        };
+        
+        var tokens = GenerateTokens(payload);
+
+        await SaveTokenAsync(result.Data.Id, tokens.RefreshToken);
+        
+        return Result<AuthResponse>.Success(tokens);
+    }
+
     public async Task<bool> SaveTokenAsync(int userId, string refreshToken)
     {
-        var command = new CreateRefreshTokenCommand(userId, refreshToken);
-
-        Console.WriteLine(userId);
+        var command = new CreateTokenCommand(userId, refreshToken);
         
         var result = await _mediator.Send(command);
 
@@ -60,7 +96,7 @@ public class TokenService(IMediator mediator, IOptions<JwtOptions> options) : IT
                 new Claim(JwtRegisteredClaimNames.Jti, Guid.NewGuid().ToString()),
                 new Claim(JwtRegisteredClaimNames.Iat, DateTime.UtcNow.ToUniversalTime().ToString(CultureInfo.CurrentCulture))
             }),
-            Expires = DateTime.UtcNow.AddHours(_options.ExpiresHours),
+            Expires = DateTime.UtcNow.AddMinutes(_options.ExpiresHours),
             Issuer = _options.Issuer,
             Audience = _options.Audience,
             SigningCredentials = new SigningCredentials(new SymmetricSecurityKey(secretKey), SecurityAlgorithms.HmacSha256)

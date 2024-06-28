@@ -19,6 +19,15 @@ public class UserRepository(ApplicationDbContext context) : IUserRepository
         return newUser.Entity.Id;
     }
 
+    public async Task<User?> GetUserByIdAsync(int userId, CancellationToken cancellationToken = default)
+    {
+        var result = await _context.Users
+            .AsNoTracking()
+            .FirstOrDefaultAsync(x => x.Id == userId, cancellationToken);
+
+        return result;
+    }
+
     public async Task<User?> GetUserByEmailAsync(string email, CancellationToken cancellationToken = default)
     {
         var result = await _context.Users
