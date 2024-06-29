@@ -1,10 +1,9 @@
-﻿using CardTracker.Application.Common.Options;
-using FluentValidation;
+﻿using FluentValidation;
 using Microsoft.Extensions.DependencyInjection;
 using CardTracker.Application.Services.AuthService;
 using CardTracker.Application.Services.TokenService;
+using CardTracker.Application.Services.AccountService;
 using CardTracker.Application.Services.RegistrationService;
-using Microsoft.Extensions.Configuration;
 
 namespace CardTracker.Application;
 
@@ -20,6 +19,7 @@ public static class DependencyInjection
 
         serviceCollection.AddTransient<IAuthService, AuthService>();
         serviceCollection.AddTransient<ITokenService, TokenService>();
+        serviceCollection.AddTransient<IAccountService, AccountService>();
         serviceCollection.AddTransient<IRegistrationService, RegistrationService>();
         
         return serviceCollection;

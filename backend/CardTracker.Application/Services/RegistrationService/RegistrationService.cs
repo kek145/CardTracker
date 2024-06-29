@@ -5,7 +5,7 @@ using System.Threading.Tasks;
 using CardTracker.Domain.Responses;
 using CardTracker.Domain.Abstractions;
 using CardTracker.Domain.Requests.Registration;
-using CardTracker.Application.Commands.UserCommands.CreateUser;
+using CardTracker.Application.Commands.UserCommands.AddUser;
 
 namespace CardTracker.Application.Services.RegistrationService;
 
@@ -23,7 +23,7 @@ public class RegistrationService(IMediator mediator, IValidator<RegistrationRequ
         if (request.Password != request.ConfirmPassword)
             return new BaseResponse<int>().Failure("Password mismatch", HttpStatusCode.BadRequest);
 
-        var command = new CreateUserCommand(request);
+        var command = new AddUserCommand(request);
 
         var result = await _mediator.Send(command);
         

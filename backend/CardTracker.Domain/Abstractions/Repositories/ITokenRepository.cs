@@ -2,7 +2,7 @@
 using System.Threading.Tasks;
 using CardTracker.Domain.Models;
 
-namespace CardTracker.Infrastructure.Abstractions.Repositories;
+namespace CardTracker.Domain.Abstractions.Repositories;
 
 public interface ITokenRepository
 {

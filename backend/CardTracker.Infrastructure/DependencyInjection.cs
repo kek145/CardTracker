@@ -1,11 +1,11 @@
-﻿using CardTracker.Infrastructure.Abstractions.Identity;
+﻿using CardTracker.Domain.Abstractions.Repositories;
 using Microsoft.EntityFrameworkCore;
+using CardTracker.Infrastructure.Hasher;
 using Microsoft.Extensions.Configuration;
 using CardTracker.Infrastructure.DataStore;
 using CardTracker.Infrastructure.Repositories;
 using Microsoft.Extensions.DependencyInjection;
-using CardTracker.Infrastructure.Abstractions.Repositories;
-using CardTracker.Infrastructure.Hasher;
+using CardTracker.Infrastructure.Abstractions.Identity;
 
 namespace CardTracker.Infrastructure;
 

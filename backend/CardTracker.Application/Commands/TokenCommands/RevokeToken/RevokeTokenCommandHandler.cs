@@ -2,7 +2,7 @@
 using System.Threading;
 using System.Threading.Tasks;
 using CardTracker.Application.Common;
-using CardTracker.Infrastructure.Abstractions.Repositories;
+using CardTracker.Domain.Abstractions.Repositories;
 
 namespace CardTracker.Application.Commands.TokenCommands.RevokeToken;
 

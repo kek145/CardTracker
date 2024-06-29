@@ -5,7 +5,7 @@ using System.Threading.Tasks;
 using CardTracker.Domain.Models;
 using Microsoft.EntityFrameworkCore;
 using CardTracker.Infrastructure.DataStore;
-using CardTracker.Infrastructure.Abstractions.Repositories;
+using CardTracker.Domain.Abstractions.Repositories;
 
 namespace CardTracker.Infrastructure.Repositories;
 

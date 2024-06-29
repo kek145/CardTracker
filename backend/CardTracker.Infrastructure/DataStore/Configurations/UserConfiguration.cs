@@ -16,13 +16,15 @@ public class UserConfiguration : IEntityTypeConfiguration<User>
 
         builder.Property(x => x.Email).HasMaxLength(100).IsRequired();
 
-        builder.Property(x => x.EmailConfirmed).HasDefaultValue(false);
+        builder.Property(x => x.IsEmailConfirmed).HasDefaultValue(false);
 
         builder.Property(x => x.PasswordHash).HasMaxLength(1000).IsRequired();
         
         builder.Property(x => x.PasswordSalt).HasMaxLength(1000).IsRequired();
 
         builder.Property(x => x.ResetToken).HasMaxLength(500);
+        
+        builder.Property(x => x.VerificationToken).HasMaxLength(500);
 
         builder.HasIndex(x => x.Email).IsUnique();
     }
