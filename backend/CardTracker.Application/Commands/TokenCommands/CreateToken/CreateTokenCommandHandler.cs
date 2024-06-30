@@ -34,7 +34,7 @@ public class CreateTokenCommandHandler(ITokenRepository tokenRepository)
         {
             Token = request.RefreshToken,
             IsRevoked = false,
-            ExpiresAt = DateTime.UtcNow.AddMinutes(3),
+            ExpiresAt = DateTime.UtcNow.AddDays(30),
             UserId = request.UserId
         };
 

@@ -40,7 +40,7 @@ public class UserRepository(ApplicationDbContext context) : IUserRepository
         return result;
     }
 
-    public async Task<int> UpdateVerificationStatusAsync(int userId, CancellationToken ct = default)
+    public async Task<int> UpdateVerificationStatusAsync(int userId, CancellationToken ct)
     {
         return await _context.Users
             .Where(x => x.Id == userId)
@@ -49,6 +49,16 @@ public class UserRepository(ApplicationDbContext context) : IUserRepository
                     .SetProperty(v => v.VerifiedAt, DateTime.UtcNow)
                     .SetProperty(t => t.VerificationToken, (string?)null)
                     .SetProperty(e => e.VerificationTokenExpiry, (DateTime?)null), ct);
+    }
+
+    public async Task<int> UpdateForgotPasswordTokenAsync(string email, CancellationToken ct)
+    {
+        return await _context.Users
+            .Where(u => u.Email == email)
+            .ExecuteUpdateAsync(x => 
+                    x.SetProperty(r => r.ResetToken, Guid.NewGuid().ToString())
+                        .SetProperty(e => e.ResetTokenExpiry, DateTime.UtcNow.AddHours(1)), 
+                ct);
     }
 
     public async Task<UserVerificationDto?> GetVerificationTokenAsync(string token, CancellationToken ct)
@@ -65,5 +75,16 @@ public class UserRepository(ApplicationDbContext context) : IUserRepository
             .FirstOrDefaultAsync(ct);
 
         return result;
+    }
+
+    public async Task<int> UpdatePasswordAsync(int userId, byte[] passwordHash, byte[] passwordSalt, CancellationToken ct = default)
+    {
+        return await _context.Users
+            .Where(x => x.Id == userId)
+            .ExecuteUpdateAsync(x => 
+                x.SetProperty(h => h.PasswordHash, passwordHash)
+                    .SetProperty(s => s.PasswordSalt, passwordSalt)
+                    .SetProperty(t => t.ResetToken, (string?)null)
+                    .SetProperty(e => e.ResetTokenExpiry, (DateTime?)null), ct);
     }
 }
