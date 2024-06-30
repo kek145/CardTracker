@@ -6,7 +6,6 @@ using Microsoft.AspNetCore.Authorization;
 using CardTracker.Domain.Requests.Account;
 using Microsoft.AspNetCore.Authentication.JwtBearer;
 using CardTracker.Application.Services.AccountService;
-using Microsoft.AspNetCore.Http.HttpResults;
 
 namespace CardTracker.Api.Controllers;
 
@@ -45,15 +44,9 @@ public class AccountController(IAccountService accountService) : ControllerBase
     [Route("reset-password")]
     public async Task<IActionResult> ResetPassword([FromBody] ResetPasswordRequest request)
     {
-        var userId = Convert.ToInt32(HttpContext.User.FindFirst("UserId")?.Value);
+        var response = await _accountService.ResetPasswordAsync(request);
         
-        var response = await _accountService.ResetPasswordAsync(userId, request);
-
-        return response.StatusCode switch
-        {
-            HttpStatusCode.BadRequest => BadRequest(new { error = response.Message }),
-            HttpStatusCode.NotFound => NotFound(new { eror = response.Message }),
-            _ => Ok(new { message = "Success" })
-        };
+        return response.StatusCode is HttpStatusCode.BadRequest or HttpStatusCode.NotFound 
+            ? StatusCode((int)response.StatusCode, new { error = response.Errors }) : Ok(new { message = "Success" });
     }
 }

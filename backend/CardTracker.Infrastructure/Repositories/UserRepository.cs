@@ -61,6 +61,19 @@ public class UserRepository(ApplicationDbContext context) : IUserRepository
                 ct);
     }
 
+    public async Task<UserResetTokenDto?> GetUserResetTokenAsync(string token, CancellationToken ct = default)
+    {
+        var result = await _context.Users
+            .Where(x => x.ResetToken == token)
+            .Select(x => new UserResetTokenDto(
+                x.Id,
+                x.ResetToken,
+                x.ResetTokenExpiry))
+            .FirstOrDefaultAsync(ct);
+
+        return result;
+    }
+
     public async Task<UserVerificationDto?> GetVerificationTokenAsync(string token, CancellationToken ct)
     {
         var result = await _context.Users

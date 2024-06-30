@@ -65,7 +65,7 @@ public class IdentityController(IAuthService authService, ITokenService tokenSer
         return Ok(new { UserId = response.Data });
     }
 
-    [HttpPost]
+    [HttpDelete]
     [Route("logout")]
     [Authorize(AuthenticationSchemes = JwtBearerDefaults.AuthenticationScheme)]
     public async Task<IActionResult> Logout()
@@ -91,6 +91,7 @@ public class IdentityController(IAuthService authService, ITokenService tokenSer
     [Authorize(AuthenticationSchemes = JwtBearerDefaults.AuthenticationScheme)]
     public ActionResult<int> GetById()
     {
-        return Ok(new { id = 1 });
+        var userId = HttpContext.User.FindFirst("UserId")?.Value;
+        return Ok(new { id = userId });
     }
 }

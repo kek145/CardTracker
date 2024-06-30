@@ -2,9 +2,9 @@
 using System.Net;
 using System.Text.Json;
 using System.Threading.Tasks;
-using CardTracker.Domain.Responses;
 using Microsoft.AspNetCore.Http;
 using Microsoft.EntityFrameworkCore;
+using CardTracker.Domain.Responses.Common;
 
 namespace CardTracker.Api.Middlewares;
 
@@ -57,7 +57,7 @@ public class ErrorHandlingMiddleware(RequestDelegate next)
             PropertyNamingPolicy = JsonNamingPolicy.CamelCase
         };
 
-        var response = new BaseResponse<object>
+        var response = new BaseResponse
         {
             StatusCode = statusCode,
             Message = message,

@@ -8,6 +8,7 @@ using Microsoft.Extensions.Options;
 using Microsoft.IdentityModel.Tokens;
 using CardTracker.Application.Common;
 using System.IdentityModel.Tokens.Jwt;
+using System.Security.Cryptography;
 using CardTracker.Domain.Responses.Auth;
 using CardTracker.Application.Common.Models;
 using CardTracker.Application.Common.Options;
@@ -133,6 +134,6 @@ public class TokenService(IMediator mediator, IOptions<JwtOptions> options) : IT
 
     private static string GenerateRefreshToken()
     {
-        return Guid.NewGuid().ToString("N");
+        return Convert.ToHexString(RandomNumberGenerator.GetBytes(64));
     }
 }

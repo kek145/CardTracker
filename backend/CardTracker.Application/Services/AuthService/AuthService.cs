@@ -1,10 +1,9 @@
 ﻿using MediatR;
 using System.Net;
 using System.Threading.Tasks;
-using CardTracker.Domain.Responses;
-using CardTracker.Domain.Abstractions;
 using CardTracker.Domain.Requests.Auth;
 using CardTracker.Domain.Responses.Auth;
+using CardTracker.Domain.Responses.Common;
 using CardTracker.Application.Common.Models;
 using CardTracker.Application.Services.TokenService;
 using CardTracker.Infrastructure.Abstractions.Identity;
@@ -17,19 +16,19 @@ public class AuthService(IMediator mediator, ITokenService tokenService, IPasswo
     private readonly IMediator _mediator = mediator;
     private readonly ITokenService _tokenService = tokenService;
     private readonly IPasswordHasher _passwordHasher = passwordHasher;
-    public async Task<IBaseResponse<AuthResponse>> LoginUserAsync(LoginRequest request)
+    public async Task<BaseResponse<AuthResponse>> LoginUserAsync(LoginRequest request)
     {
         var query = new GetUserByEmailQuery(request.Email);
 
         var user = await _mediator.Send(query);
 
         if (user.IsSuccess is false)
-            return new BaseResponse<AuthResponse>().Failure(user.ErrorMessage, HttpStatusCode.Unauthorized);
+            return BaseResponse<AuthResponse>.Failure("Error", HttpStatusCode.Unauthorized, [user.ErrorMessage]);
 
         var verifyPasswordHash = _passwordHasher.VerifyPasswordHash(request.Password, user.Data.PasswordHash, user.Data.PasswordSalt);
 
         if (!verifyPasswordHash)
-            return new BaseResponse<AuthResponse>().Failure("Invalid password!", HttpStatusCode.Unauthorized);
+            return BaseResponse<AuthResponse>.Failure("Error", HttpStatusCode.Unauthorized, ["Invalid password!"]);
 
         var payload = new UserPayload
         {
@@ -43,9 +42,9 @@ public class AuthService(IMediator mediator, ITokenService tokenService, IPasswo
         var result = await _tokenService.SaveTokenAsync(user.Data.Id, tokens.RefreshToken);
 
         if (!result)
-            return new BaseResponse<AuthResponse>().Failure("An error occurred while generating the refresh token",
-                HttpStatusCode.Unauthorized);
+            return BaseResponse<AuthResponse>.Failure("Error",
+                HttpStatusCode.Unauthorized, ["An error occurred while generating the refresh token"]);
         
-        return new BaseResponse<AuthResponse>().Success("Authentication success", HttpStatusCode.OK, tokens);
+        return BaseResponse<AuthResponse>.Success("Success", HttpStatusCode.OK, tokens);
     }
 }
