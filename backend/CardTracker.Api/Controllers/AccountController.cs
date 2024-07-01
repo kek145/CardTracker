@@ -1,5 +1,4 @@
-﻿using System;
-using System.Net;
+﻿using System.Net;
 using System.Threading.Tasks;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Authorization;
@@ -23,7 +22,7 @@ public class AccountController(IAccountService accountService) : ControllerBase
         var response = await _accountService.VerifyAccountAsync(request);
 
         if (response.StatusCode == HttpStatusCode.BadRequest)
-            return BadRequest(new { error = response.Message });
+            return BadRequest(new { error = response.Errors });
         
         return Ok(new { message = $"Welcome back!" });
     }

@@ -51,12 +51,12 @@ public class UserRepository(ApplicationDbContext context) : IUserRepository
                     .SetProperty(e => e.VerificationTokenExpiry, (DateTime?)null), ct);
     }
 
-    public async Task<int> UpdateForgotPasswordTokenAsync(string email, CancellationToken ct)
+    public async Task<int> UpdateForgotPasswordTokenAsync(string email, string token, CancellationToken ct)
     {
         return await _context.Users
             .Where(u => u.Email == email)
             .ExecuteUpdateAsync(x => 
-                    x.SetProperty(r => r.ResetToken, Guid.NewGuid().ToString())
+                    x.SetProperty(r => r.ResetToken, token)
                         .SetProperty(e => e.ResetTokenExpiry, DateTime.UtcNow.AddHours(1)), 
                 ct);
     }

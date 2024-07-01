@@ -1,15 +1,15 @@
-﻿using Microsoft.AspNetCore.Builder;
+﻿using CardTracker.Infrastructure.DataStore;
+using Microsoft.AspNetCore.Builder;
 using Microsoft.EntityFrameworkCore;
-using CardTracker.Infrastructure.DataStore;
 using Microsoft.Extensions.DependencyInjection;
 
 namespace CardTracker.Api.Extensions;
 
 public static class MigrationExtension
 {
-    public static void ApplyMigrations(this IApplicationBuilder applicationBuilder)
+    public static void ApplyMigrations(this IApplicationBuilder app)
     {
-        using IServiceScope scope = applicationBuilder.ApplicationServices.CreateScope();
+        using IServiceScope scope = app.ApplicationServices.CreateScope();
 
         using ApplicationDbContext dbContext = scope.ServiceProvider.GetService<ApplicationDbContext>()!;
 

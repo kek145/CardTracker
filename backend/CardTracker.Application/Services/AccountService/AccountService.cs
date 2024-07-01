@@ -1,4 +1,5 @@
-﻿using MediatR;
+﻿using System;
+using MediatR;
 using System.Net;
 using FluentValidation;
 using System.Threading.Tasks;
@@ -6,8 +7,8 @@ using CardTracker.Domain.Requests.Account;
 using CardTracker.Domain.Responses.Common;
 using CardTracker.Application.Commands.UserCommands.UpdateUser;
 using CardTracker.Application.Commands.UserCommands.ResetPassword;
-using CardTracker.Application.Queries.UserQueries.GetByResetToken;
 using CardTracker.Application.Commands.UserCommands.ForgotPassword;
+using CardTracker.Application.Queries.UserQueries.GetUserByResetToken;
 using CardTracker.Application.Queries.UserQueries.GetUserVerificationToken;
 
 namespace CardTracker.Application.Services.AccountService;
@@ -32,6 +33,10 @@ public class AccountService(IMediator mediator, IValidator<ResetPasswordRequest>
 
         if (!user.IsSuccess || user.Data is null)
             return BaseResponse.Failure("Error", HttpStatusCode.NotFound, [user.ErrorMessage]);
+
+        if (user.Data.TokenExpires < DateTime.UtcNow)
+            return BaseResponse.Failure("Error", HttpStatusCode.BadRequest, ["Reset token expires!"]);
+        
         
         var command = new ResetPasswordCommand(user.Data.UserId, request.Password);
         var result = await _mediator.Send(command);

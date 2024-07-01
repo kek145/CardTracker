@@ -8,9 +8,9 @@ using CardTracker.Domain.Responses.Auth;
 using Microsoft.AspNetCore.Authorization;
 using CardTracker.Domain.Requests.Registration;
 using CardTracker.Application.Services.AuthService;
-using CardTracker.Application.Services.RegistrationService;
 using CardTracker.Application.Services.TokenService;
 using Microsoft.AspNetCore.Authentication.JwtBearer;
+using CardTracker.Application.Services.RegistrationService;
 
 namespace CardTracker.Api.Controllers;
 
@@ -28,7 +28,7 @@ public class IdentityController(IAuthService authService, ITokenService tokenSer
     {
         var response = await _authService.LoginUserAsync(request);
 
-        if (response.StatusCode == HttpStatusCode.Unauthorized)
+        if (response.StatusCode == HttpStatusCode.Unauthorized || response.Data is null)
             return Unauthorized(new { message = response.Message });
         
         HttpContext.Response.Cookies.Append("X-Refresh-Token", response.Data.RefreshToken, new CookieOptions

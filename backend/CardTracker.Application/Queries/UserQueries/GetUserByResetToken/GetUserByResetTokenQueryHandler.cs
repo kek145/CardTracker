@@ -6,7 +6,7 @@ using CardTracker.Domain.DTOs;
 using CardTracker.Domain.Common;
 using CardTracker.Domain.Abstractions.Repositories;
 
-namespace CardTracker.Application.Queries.UserQueries.GetByResetToken;
+namespace CardTracker.Application.Queries.UserQueries.GetUserByResetToken;
 
 public class GetUserByResetTokenQueryHandler(IUserRepository userRepository) : IRequestHandler<GetUserByResetTokenQuery, Result<UserResetTokenDto>>
 {
@@ -16,11 +16,8 @@ public class GetUserByResetTokenQueryHandler(IUserRepository userRepository) : I
     {
         var token = await _userRepository.GetUserResetTokenAsync(request.Token, cancellationToken);
         
-        if (token is null)
-            return Result<UserResetTokenDto>.Failure("Reset token is not found!");
-
-        return token.TokenExpires < DateTime.UtcNow 
-            ? Result<UserResetTokenDto>.Failure("Reset Token expires!") 
+        return token is null 
+            ? Result<UserResetTokenDto>.Failure("Reset token is not found!") 
             : Result<UserResetTokenDto>.Success(token);
     }
 }
