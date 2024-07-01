@@ -19,10 +19,9 @@ public class AuthService(IMediator mediator, ITokenService tokenService, IPasswo
     public async Task<BaseResponse<AuthResponse>> LoginUserAsync(LoginRequest request)
     {
         var query = new GetUserByEmailQuery(request.Email);
-
         var user = await _mediator.Send(query);
 
-        if (user.IsSuccess is false)
+        if (user.IsSuccess is false || user.Data is null)
             return BaseResponse<AuthResponse>.Failure("Error", HttpStatusCode.Unauthorized, [user.ErrorMessage]);
 
         var verifyPasswordHash = _passwordHasher.VerifyPasswordHash(request.Password, user.Data.PasswordHash, user.Data.PasswordSalt);

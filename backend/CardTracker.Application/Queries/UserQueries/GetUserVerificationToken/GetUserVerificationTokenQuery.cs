@@ -1,6 +1,6 @@
 ﻿using MediatR;
 using CardTracker.Domain.DTOs;
-using CardTracker.Application.Common;
+using CardTracker.Domain.Common;
 using CardTracker.Domain.Requests.Account;
 
 namespace CardTracker.Application.Queries.UserQueries.GetUserVerificationToken;

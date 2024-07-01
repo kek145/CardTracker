@@ -1,7 +1,7 @@
 ﻿using MediatR;
 using System.Threading;
 using System.Threading.Tasks;
-using CardTracker.Application.Common;
+using CardTracker.Domain.Common;
 using CardTracker.Domain.Abstractions.Repositories;
 
 namespace CardTracker.Application.Commands.UserCommands.ForgotPassword;

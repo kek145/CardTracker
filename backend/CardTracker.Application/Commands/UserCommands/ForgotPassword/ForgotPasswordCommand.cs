@@ -1,6 +1,6 @@
-﻿using CardTracker.Application.Common;
+﻿using MediatR;
+using CardTracker.Domain.Common;
 using CardTracker.Domain.Requests.Account;
-using MediatR;
 
 namespace CardTracker.Application.Commands.UserCommands.ForgotPassword;
 

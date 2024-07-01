@@ -4,10 +4,10 @@ using AutoMapper;
 using System.Threading;
 using System.Threading.Tasks;
 using CardTracker.Domain.Models;
-using CardTracker.Application.Common;
+using CardTracker.Domain.Common;
 using CardTracker.Application.Common.Helpers;
-using CardTracker.Infrastructure.Abstractions.Identity;
 using CardTracker.Domain.Abstractions.Repositories;
+using CardTracker.Infrastructure.Abstractions.Identity;
 
 namespace CardTracker.Application.Commands.UserCommands.AddUser;
 

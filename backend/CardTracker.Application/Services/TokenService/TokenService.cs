@@ -4,11 +4,11 @@ using System.Text;
 using System.Globalization;
 using System.Threading.Tasks;
 using System.Security.Claims;
+using CardTracker.Domain.Common;
 using Microsoft.Extensions.Options;
-using Microsoft.IdentityModel.Tokens;
-using CardTracker.Application.Common;
-using System.IdentityModel.Tokens.Jwt;
 using System.Security.Cryptography;
+using Microsoft.IdentityModel.Tokens;
+using System.IdentityModel.Tokens.Jwt;
 using CardTracker.Domain.Responses.Auth;
 using CardTracker.Application.Common.Models;
 using CardTracker.Application.Common.Options;
@@ -27,25 +27,20 @@ public class TokenService(IMediator mediator, IOptions<JwtOptions> options) : IT
     public async Task<Result<AuthResponse>> ValidationRefreshTokenAsync(string refreshToken)
      {
         var query = new GetTokenByNameQuery(refreshToken);
-
         var token = await _mediator.Send(query);
-
-        if (!token.IsSuccess)
+        
+        if (!token.IsSuccess || token.Data is null)
             return Result<AuthResponse>.Failure($"{token.ErrorMessage}");
 
-        if (token.Data.ExpiresAt < DateTime.UtcNow)
-            return Result<AuthResponse>.Failure("Refresh token has expired!");
-
-        if (token.Data.IsRevoked)
-            return Result<AuthResponse>.Failure("Refresh token has been revoked!");
-
         var user = new GetUserByIdQuery(token.Data.UserId);
-
         var result = await _mediator.Send(user);
         
         if (!result.IsSuccess)
             return Result<AuthResponse>.Failure(result.ErrorMessage);
-
+        
+        if(result.Data is null)
+            return Result<AuthResponse>.Failure("User is null!");
+        
         var payload = new UserPayload
         {
             UserId = result.Data.Id,
@@ -63,7 +58,6 @@ public class TokenService(IMediator mediator, IOptions<JwtOptions> options) : IT
     public async Task<bool> SaveTokenAsync(int userId, string refreshToken)
     {
         var command = new CreateTokenCommand(userId, refreshToken);
-        
         var result = await _mediator.Send(command);
 
         return result.IsSuccess;
@@ -72,17 +66,10 @@ public class TokenService(IMediator mediator, IOptions<JwtOptions> options) : IT
     public async Task<Result> RevokeTokenAsync(string refreshToken)
     {
         var tokenName = new GetTokenByNameQuery(refreshToken);
-
         var token = await _mediator.Send(tokenName);
 
-        if (!token.IsSuccess)
+        if (!token.IsSuccess || token.Data is null)
             return Result.Failure(token.ErrorMessage);
-
-        if (token.Data.IsRevoked)
-            return Result.Failure("refresh token has already been revoked");
-
-        if (token.Data.ExpiresAt < DateTime.UtcNow)
-            return Result.Failure("refresh token has expired");
 
         var command = new RevokeTokenCommand(token.Data.Id);
 

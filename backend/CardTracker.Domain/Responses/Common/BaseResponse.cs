@@ -5,9 +5,9 @@ namespace CardTracker.Domain.Responses.Common;
 
 public class BaseResponse
 {
-    public string Message { get; set; } = string.Empty;
-    public HttpStatusCode StatusCode { get; set; }
-    public List<string> Errors { get; set; } = [];
+    public string Message { get; init; } = string.Empty;
+    public HttpStatusCode StatusCode { get; init; }
+    public List<string> Errors { get; private set; } = [];
     
     public static BaseResponse Success(string message, HttpStatusCode statusCode)
     {

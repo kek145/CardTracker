@@ -1,6 +1,6 @@
-﻿using CardTracker.Application.Common;
+﻿using MediatR;
 using CardTracker.Domain.Models;
-using MediatR;
+using CardTracker.Domain.Common;
 
 namespace CardTracker.Application.Queries.UserQueries.GetUserById;
 

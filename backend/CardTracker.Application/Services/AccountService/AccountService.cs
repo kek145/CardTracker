@@ -1,5 +1,4 @@
-﻿using System;
-using MediatR;
+﻿using MediatR;
 using System.Net;
 using FluentValidation;
 using System.Threading.Tasks;
@@ -31,14 +30,8 @@ public class AccountService(IMediator mediator, IValidator<ResetPasswordRequest>
         var query = new GetUserByResetTokenQuery(request.ResetToken);
         var user = await _mediator.Send(query);
 
-        if (!user.IsSuccess)
+        if (!user.IsSuccess || user.Data is null)
             return BaseResponse.Failure("Error", HttpStatusCode.NotFound, [user.ErrorMessage]);
-
-        if (user.Data.TokenExpires < DateTime.UtcNow)
-            return BaseResponse.Failure("Error", HttpStatusCode.BadRequest, ["Token expires!"]);
-
-        if (user.Data.ResetToken == null)
-            return BaseResponse.Failure("Error", HttpStatusCode.NotFound, ["Token is null!"]);
         
         var command = new ResetPasswordCommand(user.Data.UserId, request.Password);
         var result = await _mediator.Send(command);
@@ -65,9 +58,9 @@ public class AccountService(IMediator mediator, IValidator<ResetPasswordRequest>
 
         var dataToken = await _mediator.Send(token);
 
-        if (!dataToken.IsSuccess)
+        if (!dataToken.IsSuccess || dataToken.Data is null)
             return BaseResponse.Failure("Error", HttpStatusCode.BadRequest, [dataToken.ErrorMessage]);
-
+        
         var command = new UpdateVerificationStatusCommand(dataToken.Data.UserId);
 
         var result = await _mediator.Send(command);

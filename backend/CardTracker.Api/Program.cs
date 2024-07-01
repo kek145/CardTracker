@@ -46,6 +46,8 @@ app.UseAuthorization();
 
 app.AddGlobalErrorHandling();
 
+app.ApplyMigrations();
+
 app.MapControllers();
 
 app.Run();

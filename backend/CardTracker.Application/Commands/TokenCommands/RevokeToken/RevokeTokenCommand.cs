@@ -1,5 +1,5 @@
-﻿using CardTracker.Application.Common;
-using MediatR;
+﻿using MediatR;
+using CardTracker.Domain.Common;
 
 namespace CardTracker.Application.Commands.TokenCommands.RevokeToken;
 

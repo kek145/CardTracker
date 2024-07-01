@@ -1,6 +1,6 @@
 ﻿using MediatR;
 using CardTracker.Domain.Models;
-using CardTracker.Application.Common;
+using CardTracker.Domain.Common;
 
 namespace CardTracker.Application.Queries.UserQueries.GetUserByEmail;
 

@@ -11,7 +11,6 @@ namespace CardTracker.Api.Middlewares;
 public class ErrorHandlingMiddleware(RequestDelegate next)
 {
     private readonly RequestDelegate _next = next;
-    
     public async Task InvokeAsync(HttpContext context)
     {
         try

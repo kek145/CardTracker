@@ -3,7 +3,7 @@ using MediatR;
 using System.Threading;
 using System.Threading.Tasks;
 using CardTracker.Domain.Models;
-using CardTracker.Application.Common;
+using CardTracker.Domain.Common;
 using CardTracker.Domain.Abstractions.Repositories;
 
 namespace CardTracker.Application.Queries.TokenQueries.GetTokenByName;
@@ -14,14 +14,16 @@ public class GetTokenByNameQueryHandler(ITokenRepository tokenRepository) : IReq
     
     public async Task<Result<RefreshToken>> Handle(GetTokenByNameQuery request, CancellationToken cancellationToken)
     {
-        Console.WriteLine(request.RefreshToken);
-        
         var token = await _tokenRepository.GetRefreshTokenByNameAsync(request.RefreshToken, cancellationToken);
-        
-        Console.WriteLine(token);
 
-        return token is null 
-            ? Result<RefreshToken>.Failure("RefreshToken is null") 
+        if (token is null)
+            return Result<RefreshToken>.Failure("Token is null!");
+
+        if (token.ExpiresAt < DateTime.UtcNow)
+            return Result<RefreshToken>.Failure("Refresh token has expired!");
+
+        return token.IsRevoked 
+            ? Result<RefreshToken>.Failure("Refresh token has been revoked!") 
             : Result<RefreshToken>.Success(token);
     }
 }
